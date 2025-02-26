@@ -33,7 +33,7 @@ export default function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loginUser: handleLogin, logout: handleLogout }}> 
+    <AuthContext.Provider value={{ user, login: handleLogin, logout: handleLogout }}> 
       {children}
     </AuthContext.Provider>
   );

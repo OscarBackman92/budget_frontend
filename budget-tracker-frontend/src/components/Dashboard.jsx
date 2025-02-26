@@ -1,22 +1,41 @@
+"use client";
 import { useEffect, useState } from "react";
+import { fetchTransactions } from "../utils/api";
 
 export default function Dashboard() {
-  const [data, setData] = useState(null);
+  const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/") // Replace with actual API URL
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("✅ API Response:", data); // Check console for response
-        setData(data);
-      })
-      .catch((error) => console.error("❌ API Fetch Error:", error));
+    const loadTransactions = async () => {
+      try {
+        console.log("📡 Fetching transactions...");
+        const data = await fetchTransactions();
+        console.log("✅ Transactions fetched:", data);
+
+        // ✅ Ensure we always set an array to prevent `undefined.map` errors
+        setTransactions(data.results || []);
+      } catch (error) {
+        console.error("❌ Error fetching transactions:", error);
+      }
+    };
+
+    loadTransactions();
   }, []);
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      {data ? <pre>{JSON.stringify(data, null, 2)}</pre> : <p>Loading...</p>}
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-4">Transaction List</h2>
+      {transactions.length === 0 ? (
+        <p className="text-gray-600">No transactions found.</p>
+      ) : (
+        <ul>
+          {transactions.map((transaction) => (
+            <li key={transaction.id} className="border-b p-2">
+              {transaction.description} - ${transaction.amount}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
