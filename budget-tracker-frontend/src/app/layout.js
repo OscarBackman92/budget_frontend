@@ -1,6 +1,6 @@
-import "@/styles/globals.css";
-import Navbar from "@/app/components/Navbar";
-import Footer from "@/app/components/Footer";
+import "../styles/globals.css"; // ✅ Adjusted import for styles
+import Navbar from "../components/Navbar"; // ✅ Fixed path
+import Footer from "../components/Footer"; // ✅ Fixed path
 
 export default function RootLayout({ children }) {
   return (

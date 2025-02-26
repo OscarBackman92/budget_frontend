@@ -1,13 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./app/**/*.{js,ts,jsx,tsx}", // ✅ App Router
-    "./pages/**/*.{js,ts,jsx,tsx}", // ✅ Pages Router
-    "./components/**/*.{js,ts,jsx,tsx}",
-    "./src/**/*.{js,ts,jsx,tsx}", // ✅ For additional components
+    "./src/app/**/*.{js,ts,jsx,tsx}", // ✅ App Router
+    "./src/pages/**/*.{js,ts,jsx,tsx}", // ✅ Pages Router (if used)
+    "./src/components/**/*.{js,ts,jsx,tsx}", // ✅ Components
   ],
   theme: {
     extend: {},
   },
+  darkMode: "class", // ✅ Move dark mode inside the main export
   plugins: [],
 };
