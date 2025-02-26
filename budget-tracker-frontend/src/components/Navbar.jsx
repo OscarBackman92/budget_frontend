@@ -1,22 +1,24 @@
-"use client"; // ✅ Ensures it's a Client Component
+"use client"; // ✅ Client Component Required
 
 import Link from "next/link";
-import DarkModeToggle from "./DarkModeToggle";
+import { useContext } from "react";
+import { AuthContext } from "@/app/context/AuthContext";
 
 export default function Navbar() {
+  const { user, logout } = useContext(AuthContext);
+
   return (
     <nav className="bg-gray-800 p-4 flex justify-between items-center">
-      {/* Logo / Title */}
       <h1 className="text-white text-xl font-bold">Budget Tracker</h1>
-
-      {/* Navigation Links */}
-      <div className="space-x-4">
-        <Link href="/" className="text-gray-300 hover:text-white">🏠 Home</Link>
-        <Link href="/dashboard" className="text-gray-300 hover:text-white">📊 Dashboard</Link>
+      <div className="flex gap-4">
+        <Link href="/" className="text-white">🏠 Home</Link>
+        <Link href="/dashboard" className="text-white">📊 Dashboard</Link>
+        {user ? (
+          <button onClick={logout} className="text-red-500">Logout</button>
+        ) : (
+          <Link href="/login" className="text-green-400">Login</Link>
+        )}
       </div>
-
-      {/* Dark Mode Toggle */}
-      <DarkModeToggle />
     </nav>
   );
 }
