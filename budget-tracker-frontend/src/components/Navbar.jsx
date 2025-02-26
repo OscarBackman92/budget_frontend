@@ -1,5 +1,4 @@
-"use client"; // ✅ Client Component Required
-
+"use client";
 import Link from "next/link";
 import { useContext } from "react";
 import { AuthContext } from "@/app/context/AuthContext";
@@ -10,13 +9,18 @@ export default function Navbar() {
   return (
     <nav className="bg-gray-800 p-4 flex justify-between items-center">
       <h1 className="text-white text-xl font-bold">Budget Tracker</h1>
-      <div className="flex gap-4">
-        <Link href="/" className="text-white">🏠 Home</Link>
-        <Link href="/dashboard" className="text-white">📊 Dashboard</Link>
+      <div className="space-x-4">
+        <Link href="/" className="text-white">Home</Link>
         {user ? (
-          <button onClick={logout} className="text-red-500">Logout</button>
+          <>
+            <Link href="/dashboard" className="text-white">Dashboard</Link>
+            <button onClick={logout} className="bg-red-500 text-white px-3 py-1 rounded">Logout</button>
+          </>
         ) : (
-          <Link href="/login" className="text-green-400">Login</Link>
+          <>
+            <Link href="/signin" className="text-white">Sign In</Link>
+            <Link href="/signup" className="text-white">Sign Up</Link>
+          </>
         )}
       </div>
     </nav>

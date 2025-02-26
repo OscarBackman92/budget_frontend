@@ -1,42 +1,40 @@
-"use client"; // Required for Next.js Client Components
+"use client";
 import { createContext, useState, useEffect } from "react";
-import { loginUser, logoutUser } from "@/app/utils/api"; 
+import { loginUser as apiLoginUser, logoutUser } from "../utils/api"; // ✅ Correct import
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("access_token");
-    if (storedToken) {
-      setToken(storedToken);
-      setUser({ loggedIn: true });
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      setUser({ token });
     }
   }, []);
 
-  const login = async (credentials) => {
+  const handleLogin = async (credentials) => {
+    console.log("📤 Attempting Login with:", credentials); // ✅ Debugging log
     try {
-      const response = await loginUser(credentials);
-      localStorage.setItem("access_token", response.data.access);
-      localStorage.setItem("refresh_token", response.data.refresh);
-      setToken(response.data.access);
-      setUser({ loggedIn: true });
+      const data = await apiLoginUser(credentials);
+      console.log("✅ Login Success! Token:", data.access); // ✅ Log received token
+      setUser({ token: data.access });
     } catch (error) {
-      console.error("Login failed", error);
+      console.error("❌ Login API Error:", error);
+      throw error; // Re-throw to be caught in SignIn.jsx
     }
   };
 
-  const logout = () => {
+  const handleLogout = () => {
+    console.log("🔴 Logging out user...");
     logoutUser();
-    setToken(null);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, loginUser: handleLogin, logout: handleLogout }}> 
       {children}
     </AuthContext.Provider>
   );
-};
+}
