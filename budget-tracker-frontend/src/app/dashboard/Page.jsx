@@ -1,43 +1,64 @@
-"use client";
-import { useEffect, useState } from "react";
-import { fetchTransactions } from "@/app/utils/api";
+"use client";  // ✅ Add this at the top
+
+import { useState, useEffect } from "react";
+import { fetchTransactions, deleteTransaction } from "../utils/api";
+import AddTransactionForm from "../../components/AddTransactionForm";
 
 export default function Dashboard() {
   const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchTransactions()
-      .then((res) => setTransactions(res.data))
-      .catch((err) => console.error("Error fetching transactions:", err));
+    loadTransactions();
   }, []);
 
+  const loadTransactions = async () => {
+    try {
+      console.log("📡 Fetching transactions...");
+      const data = await fetchTransactions();
+      setTransactions(data.results || []);
+    } catch (error) {
+      console.error("❌ Error fetching transactions:", error);
+      setError("Failed to load transactions.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (transactionId) => {
+    try {
+      await deleteTransaction(transactionId);
+      setTransactions((prev) => prev.filter((tx) => tx.id !== transactionId));
+    } catch (error) {
+      console.error("❌ Error deleting transaction:", error);
+    }
+  };
+
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-      <table className="min-w-full bg-white border border-gray-200 shadow-md">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="py-2 px-4 border-b">Title</th>
-            <th className="py-2 px-4 border-b">Amount</th>
-            <th className="py-2 px-4 border-b">Type</th>
-            <th className="py-2 px-4 border-b">Category</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((tx) => (
-            <tr key={tx.id} className="border-t">
-              <td className="py-2 px-4">{tx.title}</td>
-              <td className="py-2 px-4">${tx.amount}</td>
-              <td className="py-2 px-4 text-center">
-                <span className={`px-2 py-1 rounded ${tx.transaction_type === "income" ? "bg-green-200" : "bg-red-200"}`}>
-                  {tx.transaction_type}
-                </span>
-              </td>
-              <td className="py-2 px-4">{tx.category}</td>
-            </tr>
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-4">Transaction List</h2>
+
+      {/* ✅ Include AddTransactionForm */}
+      <AddTransactionForm onTransactionAdded={loadTransactions} />
+
+      {loading && <p className="text-gray-500">Loading transactions...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+      {!loading && !error && transactions.length === 0 && (
+        <p className="text-gray-600">No transactions found.</p>
+      )}
+      {!loading && !error && transactions.length > 0 && (
+        <ul>
+          {transactions.map((transaction) => (
+            <li key={transaction.id} className="border-b p-2 flex justify-between items-center">
+              <span>{transaction.description} - ${transaction.amount}</span>
+              <button onClick={() => handleDelete(transaction.id)} className="bg-red-500 text-white px-3 py-1 rounded">
+                Delete
+              </button>
+            </li>
           ))}
-        </tbody>
-      </table>
+        </ul>
+      )}
     </div>
   );
 }

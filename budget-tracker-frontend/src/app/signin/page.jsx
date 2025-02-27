@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function SignIn() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
-  const { loginUser } = useContext(AuthContext); // ✅ This must match `AuthContext`
+  const { login } = useContext(AuthContext); // ✅ Use `login` (matches AuthContext)
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -14,13 +14,13 @@ export default function SignIn() {
     console.log("📤 Submitting login form...");
     console.log("📝 Form Data:", formData);
 
-    if (!loginUser) {
-      console.error("❌ loginUser function is missing from AuthContext!");
+    if (!login) {
+      console.error("❌ login function is missing from AuthContext!");
       return;
     }
 
     try {
-      await loginUser(formData);
+      await login(formData);
       console.log("✅ Login successful! Redirecting to dashboard...");
       router.push("/dashboard");
     } catch (err) {
@@ -34,13 +34,27 @@ export default function SignIn() {
       <h2 className="text-2xl font-bold mb-4">Sign In</h2>
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" name="username" placeholder="Username"
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
           className="w-full p-2 border rounded"
-          onChange={(e) => setFormData({ ...formData, username: e.target.value })} required />
-        <input type="password" name="password" placeholder="Password"
+          value={formData.username}
+          onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
           className="w-full p-2 border rounded"
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Sign In</button>
+          value={formData.password}
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          required
+        />
+        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
+          Sign In
+        </button>
       </form>
     </div>
   );
